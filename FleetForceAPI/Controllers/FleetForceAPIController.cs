@@ -1,4 +1,5 @@
 ﻿using FleetForceAPI.Data;
+using FleetForceAPI.Logging;
 using FleetForceAPI.Models;
 using FleetForceAPI.Models.Dto;
 using Microsoft.AspNetCore.JsonPatch;
@@ -8,12 +9,25 @@ namespace FleetForceAPI.Controllers
 {
     [Route("api/FleetForceAPI")]
     [ApiController]
-    public class FleetForceAPIControllercs : ControllerBase 
+    public class FleetForceAPIController : ControllerBase 
     {
+        //private readonly ILogger<FleetForceAPIController> _logger;
+        private readonly ILogging _logger;
+
+        //public FleetForceAPIController(ILogger<FleetForceAPIController> logger)
+        //{
+        //    _logger = logger; 
+        //}
+        public FleetForceAPIController(ILogging logger)
+        {
+            _logger = logger;
+        }
+
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<FleetDTO>> GetFleets() 
         {
+            _logger.Log("Getting all Fleets", "");
             return Ok(FleetStore.fleetList);
         }
 
@@ -25,6 +39,7 @@ namespace FleetForceAPI.Controllers
         {
             if (id == 0) 
             {
+                _logger.Log("Get Fleet Error with ID: " + id, "error");
                 return BadRequest();
             }
 
@@ -32,6 +47,7 @@ namespace FleetForceAPI.Controllers
 
             if(fleets == null)
             {
+                _logger.Log("Fleet not found.", "error");
                 return NotFound();
             }
 
